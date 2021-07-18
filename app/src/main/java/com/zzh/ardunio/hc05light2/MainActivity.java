@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
 
         initPermissions();
+        initColors(this);
         mBLESPPUtils = new BLESPPUtils(MainActivity.this, this);
         mBLESPPUtils.setEnableLogOut();
         mBLESPPUtils.setStopString("\r\n");
@@ -118,8 +119,9 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                     1
             );
         }
-
-        SharedPreferences colorInfo = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
+    }
+    public static void initColors(Context mContext){
+        SharedPreferences colorInfo = mContext.getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
         if (!colorInfo.getBoolean("Init", false)){
             SharedPreferences.Editor editor = colorInfo.edit();//获取Editor
             for(int i=0;i<3;i++){
@@ -140,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
             editor.putBoolean("Init", true);
             editor.commit();
         }
-
     }
 
     @Override

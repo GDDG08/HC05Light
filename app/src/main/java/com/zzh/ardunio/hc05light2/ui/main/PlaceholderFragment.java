@@ -8,8 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -94,6 +96,30 @@ public class PlaceholderFragment extends Fragment {
                         Toast.makeText(getContext(),"Done!",Toast.LENGTH_LONG).show();
                     }
                 });
+
+                final Switch switch1 = binding1.switch1;
+                final Switch switch2 = binding1.switch2;
+                final Switch switch3 = binding1.switch3;
+
+                switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        BLsend(isChecked? "{":"}");
+
+                    }
+                });
+                switch2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        BLsend(isChecked? "[":"]");
+                    }
+                });
+                switch3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        BLsend(isChecked? "<":">");
+                    }
+                });
                 break;
             case Page_Mode_Setting:
                 binding2 = Fragment2Binding.inflate(inflater, container, false);
@@ -149,6 +175,14 @@ public class PlaceholderFragment extends Fragment {
                         SharedPreferences.Editor editor = colorInfo.edit();//获取Editor
                         editor.putInt("light"+radiobutton_selected, color);
                         editor.commit();
+                    }
+                });
+                final Button button2 = binding2.button2;
+                button2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MainActivity.initColors(getActivity());
+                        Toast.makeText(getContext(),"Done!",Toast.LENGTH_LONG).show();
                     }
                 });
                 break;
