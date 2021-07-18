@@ -1,0 +1,2 @@
+rootProject.name = "HC05Light2"
+include ':app'
