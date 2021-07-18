@@ -118,6 +118,29 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
                     1
             );
         }
+
+        SharedPreferences colorInfo = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
+        if (!colorInfo.getBoolean("Init", false)){
+            SharedPreferences.Editor editor = colorInfo.edit();//获取Editor
+            for(int i=0;i<3;i++){
+                int def = Color.rgb(0,0,0);
+                switch (i){
+                    case 3:
+                        def = Color.rgb(100,0,0);
+                        break;
+                    case 2:
+                        def = Color.rgb(50,50,0);
+                        break;
+                    case 1:
+                        def = Color.rgb(0,100,0);
+                        break;
+                }
+                editor.putInt("light"+i, def);
+            }
+            editor.putBoolean("Init", true);
+            editor.commit();
+        }
+
     }
 
     @Override
@@ -162,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements BLESPPUtils.OnBlu
 
     @Override
     public void onReceiveBytes(byte[] bytes) {
-        Log.e("BLE","Receiving----->"+new String(bytes));
+        Log.e("BLE","Receiving----->"+new String(bytes)+"");
     }
 
     @Override

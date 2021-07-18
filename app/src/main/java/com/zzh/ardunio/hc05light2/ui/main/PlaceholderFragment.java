@@ -3,6 +3,7 @@ package com.zzh.ardunio.hc05light2.ui.main;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,10 +46,10 @@ public class PlaceholderFragment extends Fragment {
     public static final int Page_Mode_Automatic = 1;
     public static final int Page_Mode_Setting = 2;
 
-    public static int r=0,g=0,b=0;
+    public static int color = Color.parseColor("#ffffffff");
     public static int radiobutton_selected = 2;
 
-    int color_change_cnt = 0;
+//    int color_change_cnt = 0;
 
     public static PlaceholderFragment newInstance(int index) {
         PlaceholderFragment fragment = new PlaceholderFragment();
@@ -83,18 +84,13 @@ public class PlaceholderFragment extends Fragment {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        int r0 = r, g0 = g, b0 = b;
                         SharedPreferences colorInfo = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
-                        int color;
+                        int color2;
                         for (int i = 1; i <= 3; i++) {
-                            color = colorInfo.getInt("light" + i, 0);
-                            CalColor(color);
-                            BLsend("#" + i +"R" + r + "G" + g + "B" + b + "@");
+                            color2 = colorInfo.getInt("light" + i, Color.parseColor("#ffffffff"));
+                            sendColor(i, color2);
                         }
                         BLsend("!");
-                        r = r0;
-                        g = g0;
-                        b = b0;
                         Toast.makeText(getContext(),"Done!",Toast.LENGTH_LONG).show();
                     }
                 });
@@ -127,32 +123,31 @@ public class PlaceholderFragment extends Fragment {
                         int color = colorInfo.getInt("light"+radiobutton_selected,0);
                         picker.setOldCenterColor(color);
                         picker.setColor(color);
+                        sendColor();
+                        RefreshColor(color);
                     }
                 });
 
                 picker.setOnColorChangedListener(new ColorPicker.OnColorChangedListener() {
                     @Override
                     public void onColorChanged(int color0) {
-                        int color = svBar.getColor();
-                        color_change_cnt ++;
-                        if (color_change_cnt == 1) {
-                            CalColor(color);
-                            sendColor();
-                        }else if (color_change_cnt == 2)
-                            color_change_cnt = 0;
+                        color = svBar.getColor();
+//                        color_change_cnt ++;
+//                        if (color_change_cnt == 1)
+                            sendColor(radiobutton_selected, color);
+//                        else if (color_change_cnt == 2)
+//                            color_change_cnt = 0;
 
-                        binding2.textView1.setText(r+"");
-                        binding2.textView2.setText(g+"");
-                        binding2.textView3.setText(b+"");
+                        RefreshColor(color);
                     }
                 });
                 picker.setOnColorSelectedListener(new ColorPicker.OnColorSelectedListener() {
                     @Override
-                    public void onColorSelected(int color) {
+                    public void onColorSelected(int color0) {
                         //保存
                         SharedPreferences colorInfo = getActivity().getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
                         SharedPreferences.Editor editor = colorInfo.edit();//获取Editor
-                        editor.putInt("light"+radiobutton_selected, Color.rgb(r,g,b));
+                        editor.putInt("light"+radiobutton_selected, color);
                         editor.commit();
                     }
                 });
@@ -163,15 +158,27 @@ public class PlaceholderFragment extends Fragment {
         return root;
     }
 
-    private void CalColor(int color) {
+    private void RefreshColor(int color) {
+        int r,g,b;
         r = (color & 0x00ff0000) >> 16;
         g = (color & 0x0000ff00) >> 8;
         b = (color & 0x000000ff) >> 0;
+
+        binding2.textView1.setText(r+"");
+        binding2.textView2.setText(g+"");
+        binding2.textView3.setText(b+"");
     }
-    public static void sendColor(){
-        String cmd = "#"+radiobutton_selected + "R" + r + "G" + g + "B" + b + "@";
+
+    public static void sendColor() {
+        sendColor(radiobutton_selected, color);
+    }
+
+    public static void sendColor(int index, int color){
+//        Log.d("Dedddddd", Integer.toHexString(color));
+        String cmd = "#" + index + "&" + Integer.toHexString(color).substring(2) + "@";
         BLsend(cmd);
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
